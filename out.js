@@ -7,8 +7,8 @@ System.register("simple.timer.es6", [], function() {
       var currentTime = function() {
         return Math.round((new Date()).getTime() / 1000);
       };
-      var lpad = function(n) {
-        var width = arguments[1] !== (void 0) ? arguments[1] : 2;
+      var lpad = function(n, width) {
+        width = width || 2;
         n = n + '';
         var padded = null;
         if (n.length >= width) {
