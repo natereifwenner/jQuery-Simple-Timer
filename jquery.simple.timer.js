@@ -9,7 +9,9 @@
 */
 (function($){
 
-  var timer;
+  var timer, startTime;
+
+  startTime = new Date();
 
   var Timer = function(targetElement){
     this.targetElement = targetElement;
@@ -33,10 +35,14 @@
       var hours = document.createElement('div');
       hours.className = 'hours';
 
+      var days = document.createElement('div');
+      days.className = 'days';
+
       var clearDiv = document.createElement('div');
       clearDiv.className = 'clearDiv';
 
       return timerBoxElement.
+      	append(days).
         append(hours).
         append(minutes).
         append(seconds).
@@ -132,6 +138,7 @@
     element.find('.seconds').text('00');
     element.find('.minutes').text('00:');
     element.find('.hours').text('00:');
+    element.find('.days').text('00:');
   };
 
   Timer.prototype.currentTime = function() {
@@ -155,16 +162,23 @@
       return padded;
     };
 
-    var hours, minutes, remaining, seconds;
-    remaining = new Date(timeLeft * 1000);
-    hours = remaining.getUTCHours();
-    minutes = remaining.getUTCMinutes();
-    seconds = remaining.getUTCSeconds();
+    var days, hours, minutes, endTime, currentTime, seconds;
+    currentTime = new Date(this.currentTime() * 1000);
+    endTime = new Date(startTime.getTime() + (timeLeft * 1000));
+    var oneDay = 24*60*60*1000;
 
-    if (+hours === 0 && +minutes === 0 && +seconds === 0) {
+
+    //figure out how to handle < 1 full day
+	days = Math.round(Math.abs((startTime.getTime() - endTime.getTime())/(oneDay)));
+    hours = new Date(endTime.getTime() - currentTime.getTime()).getUTCHours();
+    minutes = new Date(endTime.getTime() - currentTime.getTime()).getUTCMinutes();
+    seconds = new Date(endTime.getTime() - currentTime.getTime()).getUTCSeconds();
+
+    if (+days === 0 && +hours === 0 && +minutes === 0 && +seconds === 0) {
       return [];
     } else {
-      return [lpad(hours), lpad(minutes), lpad(seconds)];
+    	console.log([lpad(days), lpad(hours), lpad(minutes), lpad(seconds)]);
+      return [lpad(days), lpad(hours), lpad(minutes), lpad(seconds)];
     }
   };
 
@@ -175,10 +189,10 @@
       element.trigger('complete');
       return false;
     }
-
     element.find('.seconds').text(finalValues.pop());
-    element.find('.minutes').text(finalValues.pop() + ':');
-    element.find('.hours').text(finalValues.pop() + ':');
+    element.find('.minutes').text(finalValues.pop() + ' : seconds ');
+    element.find('.hours').text(finalValues.pop() + ' : minutes ');
+    element.find('.days').text(finalValues.pop() + ' : hours ');
   };
 
 
